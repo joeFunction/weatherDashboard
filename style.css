@@ -1,0 +1,35 @@
+.topHeader {
+  height: 100px;
+  padding-top: 20px;
+  padding-bottom: 15px;
+  width: 100%;
+}
+
+.secondHeader {
+  min-height: 100px;
+  height: auto;
+  padding-top: 20px;
+  padding-bottom: 15px;
+  padding-left: 2%;
+  width: 100%;
+}
+
+.columns {
+  height: auto;
+}
+
+#cityLabel {
+  font-weight: bold;
+}
+
+.btn {
+  margin-top: 10px;
+}
+
+.card {
+  margin: 1% 1%;
+}
+
+.card-title {
+  text-align: center;
+}
