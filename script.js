@@ -1,11 +1,12 @@
-let queryUrlBase = 'https://api.openweathermap.org/data/2.5/weather?q=';
-let fiveDayUrlBase = 'https://api.openweathermap.org/data/2.5/forecast?q='
+// Variables
+let queryUrl = 'https://api.openweathermap.org/data/2.5/weather?q=';
+let fiveDayUrl = 'https://api.openweathermap.org/data/2.5/forecast?q='
 let apikey = '&appid=0cf78313188ed7c923c873cd418f1e41';
+let prevSearchArray = JSON.parse(localStorage.getItem("recentSearchArray")) || [];
+let recentSearch = JSON.parse(localStorage.getItem("mostRecentSearch"));
+let prevSearchBtns = $(".recentSearch");
 
-let recentSearchArray = JSON.parse(localStorage.getItem("recentSearchArray")) || [];
-let mostRecentSearch = JSON.parse(localStorage.getItem("mostRecentSearch"));
-let recentSearchBtns = $(".recentSearch");
-
+// AJAX Weather API Fuction
 function currentWeather(current) {
     $.ajax({
         url: current,
@@ -28,49 +29,56 @@ function currentWeather(current) {
         })
     })
 };
+
+// Empty Cards Function
 function emptyCards() {
     for (let i = 0; i < 5; i++) {
         $("#card" + i).empty();
     }
 }
-function renderSearchedCities() {
-    $.each(recentSearchArray, function (index, object) {
-        let newSearchBtn = $('<li class=".recentSearch">');
-        newSearchBtn.text(object.city);
-        recentSearchBtns.append(newSearchBtn);
+
+// Search List Function 
+function recentSearchList() {
+    $.each(prevSearchArray, function (index, object) {
+        let SearchBtn = $('<li class=".recentSearch">');
+        SearchBtn.text(object.city);
+        prevSearchBtns.append(SearchBtn);
     })
 }
+
+// AJAX 5 Day API Function
 function fiveDayWeather(fiveDay) {
     emptyCards();
     $.ajax({
         url: fiveDay,
         method: "GET"
-    }).then(function (responseFive) {
+    }).then(function (responseFiveDay) {
         console.log("Five Day Forecast: ")
-        console.log(responseFive);
-        $("#currentWeatherCity").text(responseFive.city.name);
+        console.log(responseFiveDay);
+        $("#currentWeatherCity").text(responseFiveDay.city.name);
         let j = 0;
         for (let i = 0; i < 39; i += 8) {
 
-            let forecastNewBody = $(`<div class="card-body${j}"></div>`);
-            let forecastNewIcon = $(`<img src="" alt="">`);
-            let forecastNewTemp = $(`<p class="card-text"></p>`);
-            let forecastNewHumid = $(`<p class="card-text"></p>`);
+            let forecastBody = $(`<div class="card-body${j}"></div>`);
+            let forecastIcon = $(`<img src="" alt="">`);
+            let forecastTemp = $(`<p class="card-text"></p>`);
+            let forecastHumid = $(`<p class="card-text"></p>`);
 
-            forecastNewIcon.attr('src', `https://openweathermap.org/img/w/${responseFive.list[i].weather[0].icon}.png`);
-            forecastNewTemp.text('Temperature: ' + responseFive.list[i].main.temp + ' F');
-            forecastNewHumid.text('Humidity: ' + responseFive.list[i].main.humidity + '%');
-            $("#card" + j).append(forecastNewBody);
-            $(".card-body" + j).append(forecastNewIcon);
-            $(".card-body" + j).append(forecastNewTemp);
-            $(".card-body" + j).append(forecastNewHumid);
+            forecastIcon.attr('src', `https://openweathermap.org/img/w/${responseFiveDay.list[i].weather[0].icon}.png`);
+            forecastTemp.text('Temperature: ' + responseFiveDay.list[i].main.temp + ' F');
+            forecastHumid.text('Humidity: ' + responseFiveDay.list[i].main.humidity + '%');
+            $("#card" + j).append(forecastBody);
+            $(".card-body" + j).append(forecastIcon);
+            $(".card-body" + j).append(forecastTemp);
+            $(".card-body" + j).append(forecastHumid);
 
             j++;
         }
     })
 };
 
-function setDates() {
+// Current Date Function
+function newDates() {
     let d = new Date();
     let month = d.getMonth() + 1;
     let day = d.getDate();
@@ -84,43 +92,46 @@ function setDates() {
     }
 }
 
-setDates();
+newDates();
 
+// Search Button
 $(".btn").on("click", function (event) {
     event.preventDefault();
     let city = $('#citySearched').val().trim();
     console.log(city);
-    let currentWeatherUrl = queryUrlBase + city + "&units=imperial" + apikey;
+    let currentWeatherUrl = queryUrl + city + "&units=imperial" + apikey;
     currentWeather(currentWeatherUrl);
-    let fiveDayWeatherUrl = fiveDayUrlBase + city + "&units=imperial" + apikey;
+    let fiveDayWeatherUrl = fiveDayUrl + city + "&units=imperial" + apikey;
     fiveDayWeather(fiveDayWeatherUrl);
 
-    let cityJSON = {
+    let citiesJSON = {
         city: city
     }
 
-    let newSearchBtn = $('<li class=".recentSearch">');
-    newSearchBtn.text(city);
-    recentSearchBtns.append(newSearchBtn);
+    let searchBtn = $('<li class=".recentSearch">');
+    searchBtn.text(city);
+    prevSearchBtns.append(searchBtn);
 
-    recentSearchArray.push(cityJSON);
-    localStorage.setItem('recentSearchArray', JSON.stringify(recentSearchArray));
+    prevSearchArray.push(citiesJSON);
+    localStorage.setItem('recentSearchArray', JSON.stringify(prevSearchArray));
     localStorage.setItem('mostRecentSearch', JSON.stringify(city));
 })
 
-recentSearchBtns.on("click", function (e) {
+// Recently Searched Cities Button & Storage
+prevSearchBtns.on("click", function (e) {
     event.preventDefault();
     clickedRecent = $(e.target).text();
     console.log(clickedRecent);
     $('#citySearched').val('');
 
-    let currentWeatherUrl = queryUrlBase + clickedRecent + "&units=imperial" + apikey;
+    let currentWeatherUrl = queryUrl + clickedRecent + "&units=imperial" + apikey;
     currentWeather(currentWeatherUrl);
 
-    let fiveDayWeatherUrl = fiveDayUrlBase + clickedRecent + "&units=imperial" + apikey;
+    let fiveDayWeatherUrl = fiveDayUrl + clickedRecent + "&units=imperial" + apikey;
     fiveDayWeather(fiveDayWeatherUrl);
     localStorage.setItem('mostRecentSearch', JSON.stringify(clickedRecent))
 
 })
 
-renderSearchedCities();
+
+recentSearchList();
