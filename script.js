@@ -7,6 +7,7 @@ let recentSearch = JSON.parse(localStorage.getItem("mostRecentSearch"));
 let prevSearchBtns = $(".recentSearch");
 
 // AJAX Weather API Fuction
+// INSERT COMMENT HERE - WHERE DOES "current" COME FROM? * Empty parameter for current. Requesrt URL.
 function currentWeather(current) {
     $.ajax({
         url: current,
@@ -14,12 +15,15 @@ function currentWeather(current) {
     }).then(function (response) {
         console.log("Current Weather: ")
         console.log(response);
+//// INSERT COMMENT HERE - WHAT ARE ROWS 19-23 DOING? * Adding API content to the elements. 
         $("#mainIcon").attr('src', `https://openweathermap.org/img/w/${response.weather[0].icon}.png`)
+        //
         $("#mainIcon").attr('alt', `${response.weather[0].description}`)
         $("#currentTemp").text("Temperature: " + Math.round(response.main.temp) + " F");
         $("#currentHumid").text("Humidity: " + response.main.humidity + "%");
         $("#currentWind").text("Wind Speed: " + response.wind.speed + "MPH");
 
+//// INSERT COMMENT HERE - WHY IS THERE THE SECOND AJAX CALL? * To pull the UV content from the API.
         let queryUrlUv = `https://api.openweathermap.org/data/2.5/uvi/forecast?` + `appid=0cf78313188ed7c923c873cd418f1e41` + `&lat=${response.coord.lat}&lon=${response.coord.lon}&cnt=1`
         $.ajax({
             url: queryUrlUv,
@@ -38,6 +42,7 @@ function emptyCards() {
 }
 
 // Search List Function 
+//// INSERT COMMENT HERE - WHAT DOES jQUERY "$.each" DO? * A function that can be used to iterate over any collection, whether it is an object or an array.
 function recentSearchList() {
     $.each(prevSearchArray, function (index, object) {
         let SearchBtn = $('<li class=".recentSearch">');
@@ -46,9 +51,10 @@ function recentSearchList() {
     })
 }
 
-// AJAX 5 Day API Function
+// AJAX 5 Day API Function// INSERT COMMENT HERE - WHERE DOES "fiveDay" COME FROM? * Empty parameter for 5 day. Request URL.
 function fiveDayWeather(fiveDay) {
     emptyCards();
+
     $.ajax({
         url: fiveDay,
         method: "GET"
@@ -56,14 +62,13 @@ function fiveDayWeather(fiveDay) {
         console.log("Five Day Forecast: ")
         console.log(responseFiveDay);
         $("#currentWeatherCity").text(responseFiveDay.city.name);
+//// INSERT COMMENT HERE - WHY IS i LESS THAN 39, AND WHY DOES IT INCREMENT BY 8? * 3 hour increments, 5 different days to increment by 8.
         let j = 0;
         for (let i = 0; i < 39; i += 8) {
-
             let forecastBody = $(`<div class="card-body${j}"></div>`);
             let forecastIcon = $(`<img src="" alt="">`);
             let forecastTemp = $(`<p class="card-text"></p>`);
             let forecastHumid = $(`<p class="card-text"></p>`);
-
             forecastIcon.attr('src', `https://openweathermap.org/img/w/${responseFiveDay.list[i].weather[0].icon}.png`);
             forecastTemp.text('Temperature: ' + responseFiveDay.list[i].main.temp + ' F');
             forecastHumid.text('Humidity: ' + responseFiveDay.list[i].main.humidity + '%');
@@ -79,11 +84,12 @@ function fiveDayWeather(fiveDay) {
 
 // Current Date Function
 function newDates() {
+//// WHAT DOES THE newDates FUNCTION DO SPECIFICALLY? * Date Storage, Constructor method input
     let d = new Date();
     let month = d.getMonth() + 1;
     let day = d.getDate();
+//// INSERT NEW COMMENT - WHAT IS output DOING? * Output date to element
     let output = (month < 10 ? '0' : '') + month + '/' + (day < 10 ? '0' : '') + day + '/' + d.getFullYear();
-
     $("#todaysDate").text(output);
     for (let i = 0; i < 5; i++) {
         day++;
