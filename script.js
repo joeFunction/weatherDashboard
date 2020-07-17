@@ -7,10 +7,10 @@ let recentSearch = JSON.parse(localStorage.getItem("mostRecentSearch"));
 let prevSearchBtns = $(".recentSearch");
 
 // AJAX Weather API Fuction
-// INSERT COMMENT HERE - WHERE DOES "current" COME FROM? * Empty parameter for current. Requesrt URL.
-function currentWeather(current) {
+// INSERT COMMENT HERE - WHERE DOES "current" COME FROM? * Empty parameter for current. Request URL.
+function currentWeather(currentWeatherUrl) {
     $.ajax({
-        url: current,
+        url: currentWeatherUrl,
         method: "GET"
     }).then(function (response) {
         console.log("Current Weather: ")
@@ -86,10 +86,12 @@ function fiveDayWeather(fiveDay) {
 function newDates() {
 //// WHAT DOES THE newDates FUNCTION DO SPECIFICALLY? * Date Storage, Constructor method input
     let d = new Date();
-    let month = d.getMonth() + 1;
+    let month = d.getMonth() + 1; //6
     let day = d.getDate();
 //// INSERT NEW COMMENT - WHAT IS output DOING? * Output date to element
-    let output = (month < 10 ? '0' : '') + month + '/' + (day < 10 ? '0' : '') + day + '/' + d.getFullYear();
+    let output = (month < 10 ? '0' : '') + month + '/' + (day < 10 ? '0' : '') + day + '/' + d.
+    //  06 / 12 / 2020 = date formating
+    getFullYear();
     $("#todaysDate").text(output);
     for (let i = 0; i < 5; i++) {
         day++;
